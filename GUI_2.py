@@ -165,9 +165,7 @@ if st.button("🔍 Predecir mejor estrategia y número de intentos"):
         # Intentos de cobranza
         top5['capital'] = capital
         top5['pagare'] = pagare
-        top5['antiguedad'] = antiguedad
-        
-        st.dataframe(top5)     
+        top5['antiguedad'] = antiguedad   
 
         # Ahora sí puedes hacer la predicción
         probas_reg = model_reg.predict_proba(top5)
