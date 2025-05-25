@@ -92,10 +92,11 @@ for b, s, e in combinaciones:
 df_combos = pd.DataFrame(data)
 
 # ======================
-# Predicción estrategia
+# Predicciones
 # ======================
-if st.button("🔍 Predecir mejor estrategia"):
-    with st.spinner('Calculando mejores combinaciones...'):
+if st.button("🔍 Predecir mejor estrategia y número de intentos"):
+    with st.spinner('Calculando mejores combinaciones y número de intentos...'):
+        # Estrategia
         probas = model_clas.predict_proba(df_combos)
         df_combos['proba_exito'] = probas[:, 1]
         
@@ -142,12 +143,14 @@ if st.button("🔍 Predecir mejor estrategia"):
             use_container_width=True
         )
         
+        # Etiqueta mapeada
         top5_mapeado['Estrategia'] = (
         top5_mapeado['idBanco'].astype(str) + ' - ' +
         top5_mapeado['Servicio'].astype(str) + ' - ' +
         top5_mapeado['idEmisora'].astype(str)
         )
-
+        
+        # Gráfico de barras
         fig = px.bar(
             top5_mapeado,
             y='proba_exito',
@@ -158,4 +161,22 @@ if st.button("🔍 Predecir mejor estrategia"):
             color_discrete_sequence=px.colors.qualitative.Set2
         )
         st.plotly_chart(fig, use_container_width=True)
+        
+        # Intentos de cobranza
+        top5['capital'] = capital
+        top5['pagare'] = pagare
+        top5['antiguedad'] = antiguedad
+        
+        st.dataframe(top5)     
+
+        # Ahora sí puedes hacer la predicción
+        probas_reg = model_reg.predict_proba(top5)
+        top5['num_intentos_Tot_pred'] = model_reg.predict(top5)
+        
+        st.markdown("### 🧮 Intentos de cobranza predichos:")
+        st.dataframe(top5)  
+
+        # Mostrar resultado
+        st.success(f'Los intentos de cobranza son: {top5["num_intentos_Tot_pred"].values[0]} intento(s) para la mejor combinación recomendada.')
+        
     
